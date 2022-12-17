@@ -6,9 +6,7 @@ import { Query } from "./query.ts";
 
 export const Store = {
     brands: async (parent: StoreSchema): Promise<Brand[]|undefined> => {
-        const schemas:any = await BrandCollection.find(
-            {stores:{$elemMatch:{$eq:new ObjectId(parent.id)}}})
-        if(schemas) return schemas.map((s:any) =>  Query.getBrand(undefined,{id:String(s._id)}));
-        return[]
+        const schemas:any = await BrandCollection.find({stores:{$elemMatch:{$eq:new ObjectId(parent.id)}}})
+        return schemas.map((s:any) =>  Query.getBrand(undefined,{id:String(s._id)}))
     }
 }
