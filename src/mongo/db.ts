@@ -1,6 +1,6 @@
 import "https://deno.land/x/dotenv/load.ts";
 import { MongoClient, Database, Collection } from "https://deno.land/x/mongo@v0.31.1/mod.ts";
-import { BrandSchema, ProductSchema, StoreSchema } from "./schemas.ts";
+import { BrandSchema, EmployeeSchema, ProductSchema, StoreSchema } from "./schemas.ts";
 
 //import { CocheSchema, ConcesionarioSchema, VendedorSchema } from "./schemas.ts";
 
@@ -22,3 +22,4 @@ console.info(`MongoDB plantillaGql connected`);
 export const ProductCollection:Collection <ProductSchema> = db.collection<ProductSchema>("Products")
 export const BrandCollection:Collection <BrandSchema> = db.collection<BrandSchema>("Brands")
 export const StoreCollection:Collection <StoreSchema> = db.collection<StoreSchema>("Store")
+export const EmployeeCollection:Collection <EmployeeSchema> = db.collection<EmployeeSchema>("Employees")

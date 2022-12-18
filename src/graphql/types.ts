@@ -9,11 +9,21 @@ type Product{
     price: Int!
 }
 
+type Employee{
+    id: String!
+    email: String!
+    name: String!
+    surname: String!
+    token: String
+    storeEmployer:Store
+    brandEmployer:Brand
+}
 type Brand{
     id: String!
     name: String!
     products: [Product]!
     stores: [Store]!
+    employees:[Employee]!
 }
 
 type Store{
@@ -21,6 +31,7 @@ type Store{
     name: String!
     address: String!
     brands: [Brand]!
+    employees:[Employee]!
 }
 
 type Mutation{
@@ -31,11 +42,16 @@ type Mutation{
     addStore(name:String!,address:String!):Store
     deleteStore(id:String!):Store
     assignBrand(id_brand:String!,id_store:String!):Brand
+    addEmployee(name:String!,surname:String!,email:String!):Employee
+    deleteEmployee(id:String!):Employee
+    assignEmployee(id_employer:String!,id_employee:String!):Employee
 }
 type Query {
     getProduct(id:String!):Product
     getBrand(id:String!):Brand
     getStore(id:String!):Store
+    getEmployee(id:String!):Employee
+    getEmployees(name:String!):[Employee]!
 } 
 `;
 /*

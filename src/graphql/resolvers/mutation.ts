@@ -1,8 +1,9 @@
+import { isDBRefLike } from "https://deno.land/x/web_bson@v0.2.5/src/db_ref.ts";
 import { ObjectId } from "https://deno.land/x/web_bson@v0.2.5/src/objectid.ts";
 
-import { BrandCollection, ProductCollection, StoreCollection } from "../../mongo/db.ts";
-import { BrandSchema, ProductSchema, StoreSchema } from "../../mongo/schemas.ts";
-import { Brand, Product, Store } from "../../types.ts";
+import { BrandCollection, EmployeeCollection, ProductCollection, StoreCollection } from "../../mongo/db.ts";
+import { BrandSchema, EmployeeSchema, ProductSchema, StoreSchema } from "../../mongo/schemas.ts";
+import { Brand, Employee, Product, Store } from "../../types.ts";
 
 export const Mutation = {
     addProduct: async(_: unknown, args: {name:string,brand:string,price:number}): Promise<(Product | undefined)> => {
@@ -87,7 +88,7 @@ export const Mutation = {
         try{
             const store: StoreSchema | undefined = await StoreCollection.findOne({_id: new ObjectId(args.id)});
             if (!store) return undefined
-            BrandCollection.deleteOne({_id: new ObjectId(args.id)});
+            StoreCollection.deleteOne({_id: new ObjectId(args.id)});
             return store
         }catch(e){
             console.error(e)
@@ -106,6 +107,58 @@ export const Mutation = {
                 name:brand.name,
                 id:String(brand._id)
                 
+            }
+        }catch(e){
+            console.error(e)
+            throw new Error(e);
+        }
+    },
+    addEmployee: async(_: unknown, args: {name:string,surname:string,email:string}): Promise<(Employee | undefined)> => {
+        try{
+            const employee: EmployeeSchema | undefined = await EmployeeCollection.findOne({email: args.email});
+            if (employee) throw new Error("Store already exists");
+            const mongoId = await EmployeeCollection.insertOne({
+                name:args.name,
+                surname:args.surname,
+                email:args.email
+            }as EmployeeSchema);
+            return{
+                id:String(mongoId),
+                name:args.name,
+                surname:args.surname,
+                email:args.email
+            }
+        }catch(e){
+            console.error(e)
+            throw new Error(e);
+        }
+    },
+    deleteEmployee: async(_: unknown, args: {id:string}): Promise<(EmployeeSchema | undefined)> => {
+        try{
+            const employee: EmployeeSchema | undefined = await EmployeeCollection.findOne({_id: new ObjectId(args.id)});
+            if (!employee) return undefined
+            EmployeeCollection.deleteOne({_id: new ObjectId(args.id)});
+            return employee
+        }catch(e){
+            console.error(e)
+            throw new Error(e);
+        }
+    },
+    assignEmployee: async(_: unknown, args: {id_employee:string,id_employer:string}): Promise<(Employee | undefined)> => {
+        try{
+            const employee: EmployeeSchema | undefined = await EmployeeCollection.findOne({_id:new ObjectId( args.id_employee)})
+            let employer: BrandSchema | StoreSchema | undefined = await BrandCollection.findOne({_id:new ObjectId( args.id_employer)})
+            if(!employer) employer = await StoreCollection.findOne({_id:new ObjectId( args.id_employer)})
+            if (!employer||!employee) return undefined
+            EmployeeCollection.updateOne( 
+                {_id:new ObjectId(args.id_employee)},
+                { $set: { employer:new ObjectId( args.id_employer) } })
+            return{
+                id:String(employee._id),
+                name:employee.name,
+                surname:employee.surname,
+                email:employee.email,
+                employer:employer._id,
             }
         }catch(e){
             console.error(e)

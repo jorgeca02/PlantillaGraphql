@@ -5,7 +5,6 @@ export type Employee = {
     name: string
     surname: string
     token?: string
-    employer?:Brand|Shop
   };
   export type Brand = {
     id: string
